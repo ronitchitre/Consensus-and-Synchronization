@@ -66,7 +66,7 @@ for i in range(n_agent):
     plt.plot(time, trajectory[:, i] * (180 / pi))
     plt.title('theta')
     plt.xlabel('time')
-    plt.ylabel('theta rad')
+    plt.ylabel('theta degree')
     legend.append(f"{i}th agent")
 
 plt.legend(legend)

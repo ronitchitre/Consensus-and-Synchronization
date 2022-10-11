@@ -31,12 +31,13 @@ def grad_V(agent):
 def control(y):
     u_i_array = np.empty(shape=n_agent, dtype=object)
     for i in range(n_agent):
-        spring_like_force = 0
+        spring_like_force = np.zeros((3, 3), dtype=float)
+        omega_hat = constants.hat(y[i + n_agent])
         for j in range(n_agent):
             error_ij = error(y[i], y[j])
-            spring_like_force += grad_V(error_ij).dot(constants.a[i])
-        u_i = constants.ref_omega - (constants.kp * spring_like_force) - (constants.kd * y[i+n_agent])
-        u_i_array[i] = u_i
+            spring_like_force += grad_V(error_ij)
+        u_i = (-1 * constants.kp * spring_like_force) - (constants.kd * omega_hat)
+        u_i_array[i] = constants.hat_inv(u_i) + constants.ref_omega
     return u_i_array
 
 
@@ -81,3 +82,5 @@ time = np.linspace(0, constants.tf, int(constants.tf / constants.h))
 trajectory = rk4method(func_ode, ic, time, 2 * n_agent)
 print('ode solved')
 plots(trajectory)
+print(error(trajectory[-1][0], trajectory[-1][1]), error(trajectory[-1][0], trajectory[-1][2]))
+print(trajectory[-1][4], trajectory[-1][3], trajectory[-1][5])
