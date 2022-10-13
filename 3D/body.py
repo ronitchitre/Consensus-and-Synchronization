@@ -10,9 +10,7 @@ inertia_inv = np.linalg.inv(inertia)
 
 
 def create_random_R():
-    q = constants.unit_vec(np.random.rand(4))
-    rot = Rot.from_quat(q)
-    return rot.as_matrix()
+    return Rot.random().as_matrix()
 
 
 def create_random_ang():

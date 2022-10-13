@@ -79,7 +79,7 @@ if order == 2:
         plt.title('angular velocity')
         plt.xlabel('time')
         plt.ylabel('angular velocity rad')
-        legend.append(f"{i}th agent"),
+        legend.append(f"{i}th agent")
 
     plt.legend(legend)
     plt.show()

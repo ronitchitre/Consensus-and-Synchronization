@@ -52,7 +52,7 @@ def func_ode(t, y):
     return y_dot
 
 
-def plots(trajectory):
+def plots(trajectory, time):
     arrow_pos = []
     for i in range(n_agent):
         q_array = np.zeros((trajectory.shape[0], 3))
@@ -70,17 +70,38 @@ def plots(trajectory):
     z = np.cos(v)
     ax.plot_surface(x, y, z, alpha=0.3)
 
-    i_marker = 0
     for data in arrow_pos:
         ax.scatter3D(data[:, 0], data[:, 1], data[:, 2])
-        i_marker += 1
     plt.show()
+
+    ang_vel_arr = np.zeros((time.shape[0], n_agent * 3))
+    for i in range(time.shape[0]):
+        for j in range(n_agent):
+            ang_vel_arr[i][3 * j:3 * j + 3] = trajectory[i][n_agent + j]
+
+    for i in range(n_agent):
+        plt.plot(time, ang_vel_arr[:, i])
+        plt.plot(time, ang_vel_arr[:, i + 1])
+        plt.plot(time, ang_vel_arr[:, i + 2])
+        plt.title(f'angular velocity {i}th agent')
+        plt.xlabel('time')
+        plt.ylabel('angular velocity rad')
+        plt.legend(['x', 'y', 'z'])
+        plt.show()
 
 
 ic = create_ic()
 time = np.linspace(0, constants.tf, int(constants.tf / constants.h))
 trajectory = rk4method(func_ode, ic, time, 2 * n_agent)
 print('ode solved')
-plots(trajectory)
-print(error(trajectory[-1][0], trajectory[-1][1]), error(trajectory[-1][0], trajectory[-1][2]))
-print(trajectory[-1][4], trajectory[-1][3], trajectory[-1][5])
+plots(trajectory, time)
+
+for agent_i in range(n_agent):
+    for agent_j in range(n_agent):
+        if agent_i == agent_j:
+            continue
+        error_ij = error(trajectory[-1][agent_i], trajectory[-1][agent_j])
+        print(f'error between {agent_i}th and {agent_j}th agent - {error_ij}')
+
+for ang_vel in trajectory[-1][n_agent:2 * n_agent]:
+    print(f'final angular velocity{ang_vel}')
